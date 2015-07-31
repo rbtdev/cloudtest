@@ -1,0 +1,13 @@
+{
+  "name": "cloud",
+  "version": "1.0.0",
+  "description": "Manage Rackspace cloud environment.",
+  "repository": "",
+  "dependencies": {
+    "async": "*",
+    "commander": "*",
+    "pkgcloud": "*",
+    "prompt": "^0.2.14",
+    "underscore": "*"
+  }
+}
