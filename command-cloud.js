@@ -2,22 +2,15 @@ var pkgcloud = require('pkgcloud');
 var async = require('async');
 var _ = require('underscore');
 var program = require('commander');
-
-
-// Defaults for rackspace cloud
-var TEST_LB_ID = 'xxx';
-var RS_API_KEY = 'xxx';
-var RS_USERNAME = 'xxx';
-var RS_REGION = 'xxx';
-var CLOUD_PROVIDER = 'xxx';
+var env = require('./config.js');
 
 program
   .version('0.0.1')
-  .option('-u, --username [name]', 'provider username')
-  .option('-p, --provider [provider]', 'Cloud provider', CLOUD_PROVIDER)
-  .option('-k, --api-key [key]', 'provider API key', RS_API_KEY)
-  .option('-r, --region [region]', 'Region', RS_REGION)
-  .option('-b, --load-balancer-id [id]', 'Load Balancer ID', TEST_LB_ID)
+  .option('-u, --username [name]', 'provider username', env.settings.username)
+  .option('-p, --provider [provider]', 'Cloud provider', env.settings.provider)
+  .option('-k, --api-key [key]', 'provider API key', env.settings.apiKey)
+  .option('-r, --region [region]', 'Region', env.settings.region)
+  .option('-b, --load-balancer-id [id]', 'Load Balancer ID', env.settings.loadBalancerId)
   .parse(process.argv);
 console.log("program: " + JSON.stringify(program))
 var RS_AUTH = {
