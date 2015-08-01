@@ -13,13 +13,13 @@ var CLOUD_PROVIDER = 'xxx';
 
 program
   .version('0.0.1')
-  .option('-u, --username [name]', 'provider username', RS_USERNAME)
-  .option('-p, --provider [name]', 'Cloud provider', CLOUD_PROVIDER)
+  .option('-u, --username [name]', 'provider username')
+  .option('-p, --provider [provider]', 'Cloud provider', CLOUD_PROVIDER)
   .option('-k, --api-key [key]', 'provider API key', RS_API_KEY)
   .option('-r, --region [region]', 'Region', RS_REGION)
   .option('-b, --load-balancer-id [id]', 'Load Balancer ID', TEST_LB_ID)
   .parse(process.argv);
-
+console.log("program: " + JSON.stringify(program))
 var RS_AUTH = {
     apiKey: program.apiKey, // your api key here
     username: program.username, // username as well
@@ -67,7 +67,8 @@ serverClient.getFlavors(function (err, flavors) {
   for (var i = flavors.length - 1; i >= 0; i--) {
     names += flavors[i].name + '\n';
   };
-  console.log(names);});
+  console.log(names);
+});
 
 serverClient.getImages(function (err, images) {
   var names = '-- Images Available --\n';
