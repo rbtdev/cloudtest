@@ -50,9 +50,9 @@ function getService (resource) {
 
 function list(resource) {
   return function _list  () {
-    var service = getService(resource);
+    var getResource = getService(resource);
     console.log("Getting available " + resource + "...");
-    service(function (err, resources) {
+    getResource(function (err, resources) {
       var names = '-- Available  --\n';
       for (var i = resources.length - 1; i >= 0; i--) {
         names += resources[i].name + '\n';
