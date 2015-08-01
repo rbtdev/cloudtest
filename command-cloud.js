@@ -4,34 +4,34 @@ var _ = require('underscore');
 var program = require('commander');
 var env = require('./config.js');
 
-program
-  .version('0.0.1')
+program.version('0.0.1')
   .option('-u, --username [name]', 'provider username', env.settings.username)
   .option('-p, --provider [provider]', 'Cloud provider', env.settings.provider)
   .option('-k, --api-key [key]', 'provider API key', env.settings.apiKey)
   .option('-r, --region [region]', 'Region', env.settings.region)
   .option('-b, --load-balancer-id [id]', 'Load Balancer ID', env.settings.loadBalancerId)
-program
-  .command('config')
+
+program.command('config')
   .description('Show default config settings')
   .action (function () {
     console.log(JSON.stringify(env, null, 4));
   })
-program
-  .command('servers')
+
+program.command('servers')
   .description('Show list of available servers')
-  .action (servers)
-program
-  .command('flavors')
+  .action (list('servers'))
+
+program.command('flavors')
   .description('Show list of available flavors')
-  .action (flavors)
-program
-  .command('images')
+  .action (list('flavors'))
+
+program.command('images')
   .description('Show list of available images')
-  .action (images)
+  .action (list('images'))
+
 program.parse(process.argv);
 
-function serverClient () {
+function getService (resource) {
   var auth = {
     apiKey: program.apiKey, // your api key here
     username: program.username, // username as well
@@ -39,44 +39,28 @@ function serverClient () {
     provider: program.provider
   }
   console.log("Connecting...");
-  return pkgcloud.compute.createClient(auth);
+  var client = pkgcloud.compute.createClient(auth);
+  var services = {
+    "servers": client.getServers.bind(client),
+    "flavors": client.getFlavors.bind(client),
+    "images": client.getImages.bind(client)
+  }
+  return services[resource];
 }
 
-function flavors () {
-  var client = serverClient();
-  console.log("Getting available flavors...");
-  client.getFlavors(function (err, flavors) {
-    var names = '-- Flavors Available --\n';
-    for (var i = flavors.length - 1; i >= 0; i--) {
-      names += flavors[i].name + '\n';
-    };
-    console.log(names);
-  });
+function list(resource) {
+  return function _list  () {
+    var service = getService(resource);
+    console.log("Getting available " + resource + "...");
+    service(function (err, resources) {
+      var names = '-- Available  --\n';
+      for (var i = resources.length - 1; i >= 0; i--) {
+        names += resources[i].name + '\n';
+      };
+      console.log(names);
+    });
+  }
 }
-
-function images() {
-  var client = serverClient();
-  console.log("Getting available images...");
-  client.getImages(function (err, images) {
-    var names = '-- Images Available --\n';
-    for (var i = images.length - 1; i >= 0; i--) {
-      names += images[i].name + '\n';
-    };
-    console.log(names);
-  });
-}
-
-function servers () {
-  var client = serverClient()
-  console.log("Getting available servers...");
-  client.getServers(function (err, servers) {
-    var names = '-- Servers Available --\n';
-    for (var i = servers.length - 1; i >= 0; i--) {
-      names += servers[i].name + '\n';
-    };
-    console.log(names);
-  });
-};
 
 function ensureStatus(loadBalancerId, callback) {
   var auth = {
